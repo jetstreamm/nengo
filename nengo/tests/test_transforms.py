@@ -175,31 +175,6 @@ def test_convolution_nef(encoders, decoders, Simulator):
             pass
 
 
-def test_convolution_invalid():
-    with pytest.raises(ValidationError, match="exceeds the spatial size"):
-        nengo.transforms.Convolution(n_filters=2, input_shape=(3, 2, 1))
-
-    # valid output shape
-    nengo.transforms.ConvolutionTranspose(
-        n_filters=2, input_shape=(3, 2, 1), output_shape=(5, 4, 2)
-    )
-    with pytest.raises(ValidationError, match="number of dimensions"):
-        # too many dims in output shape
-        nengo.transforms.ConvolutionTranspose(
-            n_filters=2, input_shape=(3, 2, 1), output_shape=(5, 4, 2, 1)
-        )
-    with pytest.raises(ValidationError, match="number of channels"):
-        # too many channels in output shape
-        nengo.transforms.ConvolutionTranspose(
-            n_filters=2, input_shape=(3, 2, 1), output_shape=(5, 4, 3)
-        )
-    with pytest.raises(ValidationError, match="not a valid output shape"):
-        # too many rows in output shape
-        nengo.transforms.ConvolutionTranspose(
-            n_filters=2, input_shape=(3, 2, 1), output_shape=(6, 4, 2)
-        )
-
-
 @pytest.mark.parametrize("use_dist", (False, True))
 @pytest.mark.parametrize("use_scipy", (False, True))
 def test_sparse(use_dist, use_scipy, Simulator, rng, seed, plt, monkeypatch, allclose):
@@ -325,6 +300,7 @@ def test_convolution_validation_errors():
         nengo.Convolution(4, input_shape, strides=(1, 1, 1))
 
     # init shape does not match kernel shape
+    input_shape = nengo.transforms.ChannelShape((5, 5, 4), channels_last=True)
     nengo.Convolution(4, input_shape, init=np.ones((3, 3, 4, 4)))  # this works
     with pytest.raises(ValidationError, match=r"Kernel shape \(9, 9, 4, 4\).*not mat"):
         nengo.Convolution(4, input_shape, init=np.ones((9, 9, 4, 4)))
@@ -332,6 +308,30 @@ def test_convolution_validation_errors():
         nengo.Convolution(4, input_shape, init=np.ones((3, 3, 7, 4)))
     with pytest.raises(ValidationError, match=r"Kernel shape \(3, 3, 4, 5\).*not mat"):
         nengo.Convolution(4, input_shape, init=np.ones((3, 3, 4, 5)))
+
+    # test empty output
+    with pytest.raises(ValidationError, match="exceeds the spatial size"):
+        nengo.transforms.Convolution(n_filters=2, input_shape=(3, 2, 1))
+
+    # valid output shape
+    nengo.transforms.ConvolutionTranspose(
+        n_filters=2, input_shape=(3, 2, 1), output_shape=(5, 4, 2)
+    )
+    with pytest.raises(ValidationError, match="number of dimensions"):
+        # too many dims in output shape
+        nengo.transforms.ConvolutionTranspose(
+            n_filters=2, input_shape=(3, 2, 1), output_shape=(5, 4, 2, 1)
+        )
+    with pytest.raises(ValidationError, match="number of channels"):
+        # too many channels in output shape
+        nengo.transforms.ConvolutionTranspose(
+            n_filters=2, input_shape=(3, 2, 1), output_shape=(5, 4, 3)
+        )
+    with pytest.raises(ValidationError, match="not a valid output shape"):
+        # too many rows in output shape
+        nengo.transforms.ConvolutionTranspose(
+            n_filters=2, input_shape=(3, 2, 1), output_shape=(6, 4, 2)
+        )
 
 
 def test_notransform():
