@@ -519,10 +519,10 @@ class Convolution(_ConvolutionBase):
         if self.padding == "valid" and any(exceeded_size):
             i = exceeded_size.index(True)
             raise ValidationError(
-                "Kernel size for spatial dimension %d (%d) exceeds the spatial size of "
-                "that dimension (%d); with the requested 'valid' padding, this will "
-                "result in an empty output."
-                % (i, self.kernel_size[i], self.input_shape.spatial_shape[i]),
+                f"Kernel size for spatial dimension {i} ({self.kernel_size[i]}) "
+                f"exceeds the spatial size of that dimension "
+                f"({self.input_shape.spatial_shape[i]}); with the requested 'valid' "
+                f"padding, this will result in an empty output.",
                 attr="padding",
                 obj=self,
             )
@@ -615,21 +615,17 @@ class ConvolutionTranspose(_ConvolutionBase):
 
         if self.output_shape.dimensions != self.input_shape.dimensions:
             raise ValidationError(
-                "The number of dimensions (%d) in the provided `output_shape` %s does"
-                " not match the number of dimensions (%d) in the input shape."
-                % (
-                    self.output_shape.dimensions,
-                    self.output_shape,
-                    self.input_shape.dimensions,
-                ),
+                f"The number of dimensions ({self.output_shape.dimensions}) in the "
+                f"provided `output_shape` {self.output_shape} does not match the number"
+                f" of dimensions ({self.input_shape.dimensions}) in the input shape.",
                 attr="output_shape",
                 obj=self,
             )
         if self.output_shape.n_channels != self.n_filters:
             raise ValidationError(
-                "The number of channels in the provided `output_shape` %s does not "
-                "match the requested number of filters (%d)."
-                % (self.output_shape, self.n_filters),
+                f"The number of channels in the provided `output_shape` "
+                f"{self.output_shape} does not match the requested number "
+                f"of filters ({self.n_filters}).",
                 attr="output_shape",
                 obj=self,
             )
@@ -639,9 +635,9 @@ class ConvolutionTranspose(_ConvolutionBase):
         )
         if self.input_shape != expected_input_shape:
             raise ValidationError(
-                "The provided `output_shape` %s would not produce `input_shape` %s "
-                "in a forward Convolution, and is therefore not a valid output shape."
-                % (self.output_shape, self.input_shape),
+                f"The provided `output_shape` {self.output_shape} would not produce "
+                f"`input_shape` {self.input_shape} in a forward Convolution, "
+                f"and is therefore not a valid output shape.",
                 attr="output_shape",
                 obj=self,
             )
@@ -649,7 +645,7 @@ class ConvolutionTranspose(_ConvolutionBase):
     @property
     def _argreprs(self):
         argreprs = super()._argreprs
-        argreprs.insert(2, "output_shape=%s" % (self.output_shape.shape,))
+        argreprs.insert(2, f"output_shape={self.output_shape.shape}")
         return argreprs
 
     def _reverse_shape(self, input_spatial_shape, n_filters):

@@ -239,15 +239,15 @@ def test_convtransposeinc_2d(
                         plt.imshow(
                             expected_k, vmin=expected_k.min(), vmax=expected_k.max()
                         )
-                        plt.title("expected out=%d ch=%d" % (i, k))
+                        plt.title(f"expected out={i} ch={k}")
 
                         plt.subplot(122)
                         plt.imshow(
                             actual_k, vmin=expected_k.min(), vmax=expected_k.max()
                         )
-                        plt.title("actual out=%d ch=%d" % (i, k))
+                        plt.title(f"actual out={i} ch={k}")
 
-                        assert success, "Output %d channel %d differs" % (i, k)
+                        assert success, f"Output {i} channel {k} differs"
 
     assert success
 
