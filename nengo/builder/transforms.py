@@ -130,7 +130,7 @@ class GeneralConvInc(Operator):
         The input signal.
     Y : Signal
         Output signal to be incremented.
-    conv : `~nengo.Convolution` or `~nengo.transforms.ConvolutionTranspose`
+    conv : `~nengo.Convolution` or `~nengo.ConvolutionTranspose`
         The Convolution or ConvolutionTranspose transform being applied.
     tag : str, optional
         A label associated with the operator, for debugging purposes.
@@ -143,7 +143,7 @@ class GeneralConvInc(Operator):
         The input signal.
     Y : Signal
         Output signal to be incremented.
-    conv : `~nengo.Convolution` or `~nengo.transforms.ConvolutionTranspose`
+    conv : `~nengo.Convolution` or `~nengo.ConvolutionTranspose`
         The Convolution or ConvolutionTranspose transform being applied.
     tag : str, optional
         A label associated with the operator, for debugging purposes.
@@ -297,7 +297,7 @@ class ConvTransposeInc(GeneralConvInc):
         The input signal.
     Y : Signal
         Output signal to be incremented.
-    conv : `~nengo.transforms.ConvolutionTranspose`
+    conv : `~nengo.ConvolutionTranspose`
         The ConvolutionTranspose transform being applied.
     tag : str, optional
         A label associated with the operator, for debugging purposes.
@@ -310,7 +310,7 @@ class ConvTransposeInc(GeneralConvInc):
         The input signal.
     Y : Signal
         Output signal to be incremented.
-    conv : `~nengo.transforms.ConvolutionTranspose`
+    conv : `~nengo.ConvolutionTranspose`
         The ConvolutionTranspose transform being applied.
     tag : str, optional
         A label associated with the operator, for debugging purposes.
