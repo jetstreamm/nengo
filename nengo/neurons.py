@@ -129,6 +129,62 @@ class NeuronType(FrozenObject):
         """
         raise NotImplementedError("Neurons must provide step_math")
 
+#------------------------------------------------------------------------#
+# In nengo/neurons.py
+class FourierSinusoid(NeuronType):
+    """A neuron model whose response curve is a half-period of a
+    sinusoidal curve.
+
+    DISCLAIMER: This class was hijacked. The new interpretation of
+    intercepts and max_rates are as follows is as follows:
+    intercepts : phase at dot(x, e) = 0
+        (-0.5, 0.5)
+    max_rates : directly proportional to gain.
+        i.e. how many periods do we want between dot(x, e) = -1 and 1
+    """
+
+    probeable = ('rates', )
+
+    s_pi = NumberParam('s_pi', low=0)
+
+    def __init__(self, max_overall_rate=400, s_pi=0.1):
+        super(FourierSinusoid, self).__init__()
+        self.max_overall_rate = max_overall_rate
+        self.s_pi = s_pi
+
+    def gain_bias_old(self, max_rates, intercepts):
+        """Determine gain and bias by shifting and scaling the lines."""
+
+        gain = max_rates * self.s_pi
+        with np.errstate(divide='ignore', invalid='ignore'):
+            bias = np.divide(intercepts, gain)
+        bias = np.where(~np.isfinite(np.abs(bias)), 0, bias)
+        return gain, bias
+
+    def gain_bias(self, max_rates, intercepts):
+        """Determine gain and bias by shifting and scaling the lines.
+        This one foregoes any calculation"""
+        gain = max_rates
+        bias = intercepts
+        return gain, bias
+
+    # def step_math_old(self, dt, J, output, voltage):
+    #     """Implement the nonlinearity."""
+    #     # basically the formula is output = 0.5*(1 + sin(J/s_pi * pi))
+    #     voltage = J / self.s_pi
+
+    #     output[...] = self.max_overall_rate * 0.5 * \
+    #         (1 + np.sin(np.pi * voltage))
+
+    def step_math(self, dt, J, output):
+        """Implement the nonlinearity.
+        This one allows for negative outputs"""
+        # basically the formula is output = 0.5*(1 + sin(J/s_pi * pi))
+        voltage = J / self.s_pi
+
+        output[...] = self.max_overall_rate * 0.5 * (np.sin(np.pi * voltage) + 1)  
+
+#--------------------------------------------------------------------------------#
 
 class Direct(NeuronType):
     """Signifies that an ensemble should simulate in direct mode.
